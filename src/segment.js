@@ -80,28 +80,22 @@ export default class Segment {
     this._clearCache()
   }
 
-  static fromRing(point1, point2, ring) {
-    const ptCmp = cmpPoints(point1, point2)
-    let lp
-    let rp
+  static fromRing(se1, se2, ring) {
+    const seg = new Segment(ring)
+    const ptCmp = cmpPoints(se1.point, se2.point)
     if (ptCmp < 0) {
-      lp = point1
-      rp = point2
+      seg.leftSE = se1
+      seg.rightSE = se2
     } else if (ptCmp > 0) {
-      lp = point2
-      rp = point1
+      seg.leftSE = se2
+      seg.rightSE = se1
     } else {
       throw new Error(
-        `Tried to create degenerate segment at [${point1.x}, ${point1.y}]`
+        `Tried to create degenerate segment at [${se1.point.x}, ${se2.point.y}]`
       )
     }
-
-    const seg = new Segment(ring)
-    seg.leftSE = new SweepEvent(lp)
     seg.leftSE.segment = seg
-    seg.rightSE = new SweepEvent(rp)
     seg.rightSE.segment = seg
-
     return seg
   }
 
@@ -237,11 +231,12 @@ export default class Segment {
 
     const point = points.shift()
     const newSeg = new Segment(this.ringIn)
-    newSeg.leftSE = new SweepEvent(point)
+    const twinsSE = SweepEvent.makeTwins(point)
+    newSeg.leftSE = twinsSE[0]
     newSeg.leftSE.segment = newSeg
     newSeg.rightSE = this.rightSE
     this.rightSE.segment = newSeg
-    this.rightSE = new SweepEvent(point)
+    this.rightSE = twinsSE[1]
     this.rightSE.segment = this
     const newEvents = [this.rightSE, newSeg.leftSE]
 
