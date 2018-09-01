@@ -91,6 +91,16 @@ describe('sweep event compare', () => {
   })
 })
 
+describe('makeTwins()', () => {
+  test('basic', () => {
+    const pt = { x: 0, y: 0 }
+    const twins = SweepEvent.makeTwins(pt)
+    expect(twins[0].point).toBe(pt)
+    expect(twins[1].point).toBe(pt)
+    expect(twins[0].linkedEvents).toBe(twins[1].linkedEvents)
+  })
+})
+
 describe('sweep event link', () => {
   test('no linked events', () => {
     const [se1, se2] = SweepEvent.makeTwins({ x: 0, y: 0 })
