@@ -49,9 +49,8 @@ export default class SweepEvent {
     )
   }
 
-  constructor (point, segment) {
+  constructor (point) {
     this.point = point
-    this.segment = segment
     this.linkedEvents = [this]
   }
 

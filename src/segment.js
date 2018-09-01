@@ -97,8 +97,10 @@ export default class Segment {
     }
 
     const seg = new Segment(ring)
-    seg.leftSE = new SweepEvent(lp, seg)
-    seg.rightSE = new SweepEvent(rp, seg)
+    seg.leftSE = new SweepEvent(lp)
+    seg.leftSE.segment = seg
+    seg.rightSE = new SweepEvent(rp)
+    seg.rightSE.segment = seg
 
     return seg
   }
@@ -235,10 +237,12 @@ export default class Segment {
 
     const point = points.shift()
     const newSeg = new Segment(this.ringIn)
-    newSeg.leftSE = new SweepEvent(point, newSeg)
+    newSeg.leftSE = new SweepEvent(point)
+    newSeg.leftSE.segment = newSeg
     newSeg.rightSE = this.rightSE
     this.rightSE.segment = newSeg
-    this.rightSE = new SweepEvent(point, this)
+    this.rightSE = new SweepEvent(point)
+    this.rightSE.segment = this
     const newEvents = [this.rightSE, newSeg.leftSE]
 
     if (points.length > 0) {
