@@ -4,14 +4,13 @@ import { RingIn, PolyIn, MultiPolyIn } from '../src/geom-in'
 
 describe('RingIn', () => {
   test('create exterior ring', () => {
-    const [pt1, pt2, pt3, pt4] = [
+    const [pt1, pt2, pt3] = [
       { x: 0, y: 0 },
       { x: 1, y: 0 },
       { x: 1, y: 1 },
-      { x: 0, y: 0 }
     ]
     const poly = {}
-    const ring = new RingIn([pt1, pt2, pt3, pt4], poly)
+    const ring = new RingIn([pt1, pt2, pt3], poly)
     poly.exteriorRing = ring
 
     expect(ring.poly).toBe(poly)
@@ -24,7 +23,7 @@ describe('RingIn', () => {
     expect(ring.segments[0].rightSE.point).toEqual(pt2)
     expect(ring.segments[1].leftSE.point).toEqual(pt2)
     expect(ring.segments[1].rightSE.point).toEqual(pt3)
-    expect(ring.segments[2].leftSE.point).toEqual(pt4)
+    expect(ring.segments[2].leftSE.point).toEqual(pt1)
     expect(ring.segments[2].rightSE.point).toEqual(pt3)
   })
 
@@ -164,9 +163,9 @@ describe('PolyIn', () => {
   test('creation', () => {
     const multiPoly = {}
     const poly = new PolyIn([
-        [{x: 0, y: 0}, {x: 10, y: 0}, {x: 10, y: 10}, {x: 0, y: 10}, {x: 0, y: 0}],
-        [{x: 0, y: 0}, {x: 1, y: 1}, {x: 1, y: 0}, {x: 0, y: 0}],
-        [{x: 2, y: 2}, {x: 2, y: 3}, {x: 3, y: 3}, {x: 3, y: 2}, {x: 2, y: 2}],
+        [{x: 0, y: 0}, {x: 10, y: 0}, {x: 10, y: 10}, {x: 0, y: 10}],
+        [{x: 0, y: 0}, {x: 1, y: 1}, {x: 1, y: 0}],
+        [{x: 2, y: 2}, {x: 2, y: 3}, {x: 3, y: 3}, {x: 3, y: 2}],
       ],
       multiPoly,
     )
@@ -181,9 +180,9 @@ describe('PolyIn', () => {
 
   describe('is inside? ', () => {
     const poly = new PolyIn([
-      [{x: 0, y: 0}, {x: 10, y: 0}, {x: 10, y: 10}, {x: 0, y: 10}, {x: 0, y: 0}],
-      [{x: 0, y: 0}, {x: 1, y: 1}, {x: 1, y: 0}, {x: 0, y: 0}],
-      [{x: 2, y: 2}, {x: 2, y: 3}, {x: 3, y: 3}, {x: 3, y: 2}, {x: 2, y: 2}],
+      [{x: 0, y: 0}, {x: 10, y: 0}, {x: 10, y: 10}, {x: 0, y: 10}],
+      [{x: 0, y: 0}, {x: 1, y: 1}, {x: 1, y: 0}],
+      [{x: 2, y: 2}, {x: 2, y: 3}, {x: 3, y: 3}, {x: 3, y: 2}],
     ])
     const exteriorRing = poly.exteriorRing
     const interiorRing1 = poly.interiorRings[0]
@@ -264,10 +263,10 @@ describe('PolyIn', () => {
 describe('MultiPolyIn', () => {
   test('creation', () => {
     const multipoly = new MultiPolyIn([
-      [[{ x: 0, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 }, { x: 0, y: 0 }]],
+      [[{ x: 0, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 }]],
       [
-        [{ x: 0, y: 0 }, { x: 4, y: 0 }, { x: 4, y: 10 }, { x: 0, y: 0 }],
-        [{ x: 2, y: 2 }, { x: 3, y: 3 }, { x: 3, y: 2 }, { x: 2, y: 2 }]
+        [{ x: 0, y: 0 }, { x: 4, y: 0 }, { x: 4, y: 10 }],
+        [{ x: 2, y: 2 }, { x: 3, y: 3 }, { x: 3, y: 2 }]
       ]
     ])
 

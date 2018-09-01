@@ -14,7 +14,7 @@ export class RingIn {
     const endTwinsSE = SweepEvent.makeTwins(geomRing[0])
     let prevSE = endTwinsSE[0]
     let twinsSE
-    for (let i = 1, iMax = geomRing.length-1; i < iMax; i++) {
+    for (let i = 1, iMax = geomRing.length; i < iMax; i++) {
       twinsSE = SweepEvent.makeTwins(geomRing[i])
       this.segments.push(Segment.fromRing(prevSE, twinsSE[0], this))
       prevSE = twinsSE[1]
