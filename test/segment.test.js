@@ -4,11 +4,14 @@ import Segment from '../src/segment'
 import SweepEvent from '../src/sweep-event'
 
 function buildSegment(pt1, pt2, ring) {
-  return Segment.fromRing(
+  const seg = Segment.fromRing(
     SweepEvent.makeTwins(pt1)[0],
     SweepEvent.makeTwins(pt2)[0],
     ring,
   )
+  seg.leftSE.linkedEvents = [seg.leftSE]
+  seg.rightSE.linkedEvents = [seg.rightSE]
+  return seg
 }
 
 describe('constructor', () => {
@@ -103,6 +106,18 @@ describe('split', () => {
 
     evt = newEvts.find(e => e.point === sPt3 && e.isLeft)
     expect(evt.segment).toBe(orgRightEvt.segment)
+  })
+
+  test('coincidents stay coincident', () => {
+    const seg1 = buildSegment({ x: 0, y: 0 }, { x: 10, y: 10 }, 0)
+    const seg2 = buildSegment({ x: 0, y: 0 }, { x: 10, y: 10 }, 1)
+    seg1.leftSE.link(seg2.leftSE)
+    seg1.rightSE.link(seg2.rightSE)
+    expect(seg1.coincidents).toBe(seg2.coincidents)
+    const newEvents = seg1.split([{x: 5, y: 5}])
+    expect(seg1.coincidents).toBe(seg2.coincidents)
+    expect(newEvents.length).toBe(4)
+    newEvents.forEach(evt => expect(evt.segment.coincidents.length).toBe(2))
   })
 })
 

@@ -202,11 +202,13 @@ export default class Segment {
   }
 
   /**
-   * Split the given segment into multiple segments on the given points.
-   *  * The existing segment will retain it's leftSE and a new rightSE will be
+   * Split the given segment and all of its coincidents into multiple segments
+   * on the given points.
+   *  * Each existing segment will retain its leftSE and a new rightSE will be
    *    generated for it.
    *  * A new segment will be generated which will adopt the original segment's
    *    rightSE, and a new leftSE will be generated for it.
+   *  * New segments will be marked coincident as needed.
    *  * If there are more than two points given to split on, new segments
    *    in the middle will be generated with new leftSE and rightSE's.
    *  * An array of the newly generated SweepEvents will be returned.
@@ -230,18 +232,29 @@ export default class Segment {
     }
 
     const point = points.shift()
-    const newSeg = new Segment(this.ringIn)
-    const twinsSE = SweepEvent.makeTwins(point)
-    newSeg.leftSE = twinsSE[0]
-    newSeg.leftSE.segment = newSeg
-    newSeg.rightSE = this.rightSE
-    this.rightSE.segment = newSeg
-    this.rightSE = twinsSE[1]
-    this.rightSE.segment = this
-    const newEvents = [this.rightSE, newSeg.leftSE]
+    const newSegments = []
+    const newEvents = []
+    for (let i = 0, iMax = this.coincidents.length; i < iMax; i++) {
+      const thisSeg = this.coincidents[i]
+      const newSeg = new Segment(thisSeg.ringIn)
+      const twinsSE = SweepEvent.makeTwins(point)
+      newSeg.leftSE = twinsSE[0]
+      newSeg.leftSE.segment = newSeg
+      newSeg.rightSE = thisSeg.rightSE
+      thisSeg.rightSE.segment = newSeg
+      thisSeg.rightSE = twinsSE[1]
+      thisSeg.rightSE.segment = thisSeg
+      newSegments.push(newSeg)
+      newEvents.push(thisSeg.rightSE)
+      newEvents.push(newSeg.leftSE)
+    }
+
+    for (let i = 1, iMax = newSegments.length; i < iMax; i++) {
+      newSegments[i].registerCoincident(newSegments[i-1])
+    }
 
     if (points.length > 0) {
-      const moreNewEvents = newSeg.split(points)
+      const moreNewEvents = newSegments[0].split(points)
       for (let i = 0, iMax = moreNewEvents.length; i < iMax; i++) {
         newEvents.push(moreNewEvents[i])
       }
